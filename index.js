@@ -1,6 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var url     = require('url');
+var fs = require('fs');
 
 function search(options, callback) {
 
@@ -45,10 +46,10 @@ function search(options, callback) {
 
     results = results.concat(newResults);
 
-    if(!options.limit || results.length < options.limit) {
+    /*if(!options.limit || results.length < options.limit) {
       params.start = results.length;
       getPage(params, onPage);
-    }
+    }*/
   });
 
 
@@ -92,11 +93,17 @@ function search(options, callback) {
     var results = [];
     var $ = cheerio.load(body);
 
-    $('.g h3 a').each(function(i, elem) {
-      var parsed = url.parse(elem.attribs.href, true);
+    fs.appendFile('g.html', body, function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+    });
+
+    $('#_Ltg .ads-ad .ads-visurl cite').each(function(i, elem) {
+      results.push($('#_Ltg .ads-ad .ads-visurl cite').eq(i).text());
+      /*var parsed = url.parse(elem.attribs.href, true);
       if (parsed.pathname === '/url') {
         results.push(parsed.query.q);
-      }
+      }*/
     });
 
     return results;
